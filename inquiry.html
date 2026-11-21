@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Property Inquiry – Jonathan Rebullo</title>
+<meta name="description" content="Tell me what property you're looking for and I'll send you options and a sample computation.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Calm, trustworthy green palette */
+  :root {
+    --green: #1E5A43;
+    --green-dark: #154332;
+    --green-soft: #E8F1EC;
+    --green-line: #CFE2D7;
+    --gold: #C9A45C;
+    --bg: #F4F7F5;
+    --card: #FFFFFF;
+    --ink: #1F2A25;
+    --text: #3D4A44;
+    --muted: #6B7872;
+    --line: #DDE5E1;
+    --error: #B42318;
+    --error-bg: #FEF3F2;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 480px; margin: 0 auto; padding: 0 0 32px; }
+
+  /* Header */
+  header {
+    background: var(--green);
+    color: #fff;
+    padding: 28px 22px 64px;
+    border-radius: 0 0 28px 28px;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+  .avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: #fff; color: var(--green);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 15px; letter-spacing: 0.5px;
+    border: 2px solid var(--gold);
+  }
+  .brand-name { font-weight: 600; font-size: 15px; margin: 0; color: #fff; }
+  .brand-role { font-size: 13px; margin: 0; color: #CFE2D7; }
+  header h1 { font-size: 25px; line-height: 1.25; font-weight: 700; margin: 0 0 10px; color: #fff; letter-spacing: -0.2px; }
+  header p { font-size: 15px; margin: 0; color: #DDEBE3; }
+
+  /* Card */
+  .card {
+    background: var(--card);
+    margin: -40px 16px 0;
+    border-radius: 20px;
+    padding: 24px 20px;
+    border: 1px solid var(--line);
+    box-shadow: 0 8px 24px rgba(21, 67, 50, 0.08);
+  }
+
+  /* Reassurance row */
+  .perks { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 22px; padding: 0; list-style: none; }
+  .perks li {
+    font-size: 12.5px; font-weight: 500; color: var(--green-dark);
+    background: var(--green-soft); border: 1px solid var(--green-line);
+    padding: 6px 10px; border-radius: 999px;
+  }
+
+  /* Fields */
+  .field { margin-bottom: 18px; }
+  label.title { display: block; font-size: 14.5px; font-weight: 600; color: var(--ink); margin-bottom: 7px; }
+  input[type="text"], input[type="tel"], select {
+    width: 100%; font-family: inherit; font-size: 16px; color: var(--ink);
+    padding: 13px 14px; border: 1.5px solid var(--line); border-radius: 12px;
+    background: #fff; transition: border-color 0.15s, box-shadow 0.15s;
+    -webkit-appearance: none; appearance: none;
+  }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7872' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center; padding-right: 38px;
+  }
+  input::placeholder { color: #9AA5A0; }
+  input:focus, select:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 4px rgba(30, 90, 67, 0.12); }
+  .err { color: var(--error); font-size: 13px; margin-top: 6px; display: none; }
+  .field.invalid .err { display: block; }
+  .field.invalid input, .field.invalid select { border-color: var(--error); }
+
+  .consent {
+    display: flex; gap: 10px; align-items: flex-start;
+    font-size: 13px; color: var(--muted); line-height: 1.55;
+    background: var(--bg); padding: 12px; border-radius: 12px;
+  }
+  .consent input { margin-top: 2px; width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--green); }
+
+  button {
+    width: 100%; font-family: inherit; font-size: 16px; font-weight: 600;
+    padding: 15px; border: none; border-radius: 12px;
+    background: var(--green); color: #fff; cursor: pointer; transition: background 0.15s;
+  }
+  button:hover { background: var(--green-dark); }
+  button:disabled { background: var(--muted); cursor: default; }
+  .note { font-size: 12.5px; color: var(--muted); text-align: center; margin: 12px 0 0; }
+
+  .form-error { display: none; background: var(--error-bg); color: var(--error); font-size: 14px; padding: 12px; border-radius: 12px; margin-bottom: 16px; }
+  .hp { position: absolute; left: -9999px; }   /* Hidden spam trap, real users never see it */
+
+  /* Thank-you screen */
+  .done { display: none; text-align: center; padding: 12px 4px; }
+  .check {
+    width: 56px; height: 56px; border-radius: 50%; background: var(--green-soft);
+    color: var(--green); font-size: 28px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;
+  }
+  .done h2 { color: var(--ink); font-size: 22px; margin: 0 0 10px; }
+  .done p { font-size: 15px; margin: 0 0 10px; }
+
+  footer { text-align: center; font-size: 12.5px; color: var(--muted); margin-top: 20px; padding: 0 20px; }
+  footer a { color: var(--green); text-decoration: none; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="brand">
+      <div class="avatar" aria-hidden="true">JR</div>
+      <div>
+        <p class="brand-name">Jonathan Rebullo</p>
+        <p class="brand-role">Property Consultant · Vista Land projects</p>
+      </div>
+    </div>
+    <h1>Find the right home for you</h1>
+    <p>Tell me what you're looking for, and I'll send you options and a sample computation.</p>
+  </header>
+
+  <div class="card">
+    <ul class="perks">
+      <li>Free consultation</li>
+      <li>No commitment</li>
+      <li>1 minute to fill out</li>
+    </ul>
+
+    <form id="leadForm" novalidate>
+      <!-- Spam trap: bots fill every field, people never see this one -->
+      <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+      <div class="form-error" id="formError">Your inquiry didn't go through. Check your connection and try again.</div>
+
+      <div class="field">
+        <label class="title" for="project">What type of property are you looking for?</label>
+        <p style="font-size:13px; color:var(--muted); margin:-2px 0 8px;">Example: condo, house and lot, or commercial lot</p>
+        <input type="text" id="project" name="project" placeholder="Condo, house and lot, or lot" autocomplete="off">
+        <div class="err">Type the property you're looking for</div>
+      </div>
+
+      <div class="field">
+        <label class="title" for="fullName">Full name</label>
+        <input type="text" id="fullName" name="fullName" placeholder="Juan Dela Cruz" autocomplete="name">
+        <div class="err">Enter your full name</div>
+      </div>
+
+      <div class="field">
+        <label class="title" for="mobile">Mobile number</label>
+        <input type="tel" id="mobile" name="mobile" placeholder="0917 123 4567" autocomplete="tel" inputmode="tel">
+        <div class="err">Enter a valid PH mobile number, like 0917 123 4567</div>
+      </div>
+
+      <div class="field">
+        <label class="title" for="purpose">What is it for?</label>
+        <select id="purpose" name="purpose">
+          <option value="">Choose one</option>
+          <option>Home to live in</option>
+          <option>Investment</option>
+          <option>Both</option>
+        </select>
+        <div class="err">Choose one</div>
+      </div>
+
+      <div class="field">
+        <label class="title" for="payment">Preferred payment</label>
+        <select id="payment" name="payment">
+          <option value="">Choose one</option>
+          <option>Spot cash</option>
+          <option>Installment</option>
+          <option>Bank financing</option>
+          <option>Pag-IBIG financing</option>
+          <option>Not sure yet</option>
+        </select>
+        <div class="err">Choose one</div>
+      </div>
+
+      <div class="field">
+        <label class="title" for="timeline">When are you planning to buy?</label>
+        <select id="timeline" name="timeline">
+          <option value="">Choose one</option>
+          <option>Within 1 month</option>
+          <option>1 to 3 months</option>
+          <option>3 to 6 months</option>
+          <option>Just looking for now</option>
+        </select>
+        <div class="err">Choose one</div>
+      </div>
+
+      <div class="field">
+        <label class="consent">
+          <input type="checkbox" id="consent" name="consent" value="yes">
+          <span>I agree to be contacted by Jonathan Rebullo about my property inquiry. My details will be kept private and used only for this inquiry, in line with the Data Privacy Act of 2012.</span>
+        </label>
+        <div class="err">Please tick the box so I can contact you</div>
+      </div>
+
+      <button type="submit" id="submitBtn">Send my inquiry</button>
+      <p class="note">Prices and availability are subject to confirmation.</p>
+    </form>
+
+    <div class="done" id="done">
+      <div class="check" aria-hidden="true">✓</div>
+      <h2>Thank you!</h2>
+      <p>I've received your inquiry. I'll message you soon with options that match what you're looking for.</p>
+      <p style="color: var(--muted); font-size: 14px;">You can close this page and go back to Messenger.</p>
+    </div>
+  </div>
+
+  <footer>
+    Questions? Message me on WhatsApp or Viber at <a href="tel:09431301792">0943 130 1792</a>
+  </footer>
+
+</div>
+
+<script>
+  // Apps Script web app URL that saves submissions to the "Vista Leads" Google Sheet.
+  // The property the buyer types fills the Project column, so one form serves every project.
+  const ENDPOINT = 'https://script.google.com/macros/s/AKfycbxTyp4MPgNuhulRfMIMgazaJtc0Eiyc5g1nnzWr6Ohv8ieKFpnoN9I0_jeamiAh1hw5eQ/exec';
+
+  const form = document.getElementById('leadForm');
+  const btn = document.getElementById('submitBtn');
+
+  // Each rule returns true when the field is valid
+  const rules = {
+    project:  v => v.trim().length >= 2,
+    fullName: v => v.trim().length >= 2,
+    mobile:   v => /^(09|\+639)\d{9}$/.test(v.replace(/[\s-]/g, '')),
+    purpose:  v => v !== '',
+    payment:  v => v !== '',
+    timeline: v => v !== '',
+    consent:  () => document.getElementById('consent').checked
+  };
+
+  function validate() {
+    let ok = true;
+    let first = null;
+    for (const name in rules) {
+      const el = document.getElementById(name);
+      const field = el.closest('.field');
+      const valid = rules[name](el.value);
+      field.classList.toggle('invalid', !valid);
+      if (!valid) { ok = false; if (!first) first = el; }
+    }
+    if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return ok;
+  }
+
+  // Clear a field's error as soon as the user fixes it
+  form.addEventListener('input', e => {
+    const field = e.target.closest('.field');
+    if (field && rules[e.target.name] && rules[e.target.name](e.target.value)) {
+      field.classList.remove('invalid');
+    }
+  });
+  document.getElementById('consent').addEventListener('change', e => {
+    if (e.target.checked) e.target.closest('.field').classList.remove('invalid');
+  });
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    document.getElementById('formError').style.display = 'none';
+    if (!validate()) return;
+
+    // Bots fill the hidden field; silently pretend success so they move on
+    if (form.website.value) { showDone(); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    const data = new URLSearchParams(new FormData(form));
+    data.delete('website');
+    data.set('mobile', form.mobile.value.replace(/[\s-]/g, ''));
+
+    try {
+      // no-cors: Google's redirect blocks reading the reply, but the data still reaches the Sheet
+      await fetch(ENDPOINT, { method: 'POST', mode: 'no-cors', body: data });
+      showDone();
+    } catch (err) {
+      document.getElementById('formError').style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Send my inquiry';
+    }
+  });
+
+  function showDone() {
+    form.style.display = 'none';
+    document.querySelector('.perks').style.display = 'none';
+    document.getElementById('done').style.display = 'block';
+    window.scrollTo(0, 0);
+  }
+</script>
+</body>
+</html>
